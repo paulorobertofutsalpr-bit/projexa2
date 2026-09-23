@@ -13,6 +13,7 @@ export const companies = pgTable("companies", {
   website: text("website"),
   logoData: text("logo_data"),
   subscriptionStatus: text("subscription_status").notNull().default("trial"),
+  subscriptionPriceCents: integer("subscription_price_cents").notNull().default(3900),
   mpPreapprovalId: text("mp_preapproval_id"),
   mpPayerEmail: text("mp_payer_email"),
   subscriptionOverdueSince: timestamp("subscription_overdue_since"),
