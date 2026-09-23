@@ -1,7 +1,11 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import { db } from "@/db";
+import { companies } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { computeEffectiveStatus, daysRemainingInGrace } from "@/lib/subscription";
 import SubscriptionActions from "@/components/SubscriptionActions";
+import SubscriptionPriceEditor from "@/components/SubscriptionPriceEditor";
 
 export const dynamic = "force-dynamic";
 
@@ -18,12 +22,16 @@ export default async function AssinaturaPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
+  const companyRows = await db.select().from(companies).where(eq(companies.id, user.companyId));
+  const company = companyRows[0];
+
   const effectiveStatus = computeEffectiveStatus({
     subscriptionStatus: user.companySubscriptionStatus,
     subscriptionOverdueSince: user.companySubscriptionOverdueSince,
   });
 
   const dias = daysRemainingInGrace(user.companySubscriptionOverdueSince);
+  const priceReais = (company?.subscriptionPriceCents ?? 3900) / 100;
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
@@ -58,9 +66,15 @@ export default async function AssinaturaPage() {
           )}
 
           <div className="text-sm text-slate-600">
-            <div className="flex justify-between py-1">
+            <div className="flex justify-between py-1 items-center">
               <span>Valor</span>
-              <span className="font-medium text-slate-900">R$ 39,00/mês</span>
+              {user.role === "ADMIN" && (effectiveStatus === "trial" || effectiveStatus === "cancelled") ? (
+                <SubscriptionPriceEditor initialPrice={priceReais} />
+              ) : (
+                <span className="font-medium text-slate-900">
+                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(priceReais)}/mês
+                </span>
+              )}
             </div>
             <div className="flex justify-between py-1">
               <span>Usuários inclusos</span>
