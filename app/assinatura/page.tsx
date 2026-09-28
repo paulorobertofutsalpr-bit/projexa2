@@ -28,6 +28,7 @@ export default async function AssinaturaPage() {
   const effectiveStatus = computeEffectiveStatus({
     subscriptionStatus: user.companySubscriptionStatus,
     subscriptionOverdueSince: user.companySubscriptionOverdueSince,
+    lifetimeAccess: user.companyLifetimeAccess,
   });
 
   const dias = daysRemainingInGrace(user.companySubscriptionOverdueSince);
@@ -68,7 +69,7 @@ export default async function AssinaturaPage() {
           <div className="text-sm text-slate-600">
             <div className="flex justify-between py-1 items-center">
               <span>Valor</span>
-              {user.role === "ADMIN" && (effectiveStatus === "trial" || effectiveStatus === "cancelled") ? (
+              {user.isSuperAdmin ? (
                 <SubscriptionPriceEditor initialPrice={priceReais} />
               ) : (
                 <span className="font-medium text-slate-900">

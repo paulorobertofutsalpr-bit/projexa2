@@ -10,6 +10,7 @@ export default function CadastroPage() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +28,7 @@ export default function CadastroPage() {
       const res = await fetch("/api/public/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ companyName, adminName, email, phone, password }),
+        body: JSON.stringify({ companyName, adminName, email, phone, password, code }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -152,6 +153,15 @@ export default function CadastroPage() {
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Código de indicação ou cupom (opcional)</label>
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              placeholder="Ex: JOAO10 ou BEMVINDO50"
+              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md uppercase focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
           <button
             type="submit"

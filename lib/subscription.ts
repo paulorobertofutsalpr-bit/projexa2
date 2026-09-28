@@ -5,7 +5,9 @@ export type EffectiveStatus = "trial" | "pending" | "active" | "overdue" | "bloc
 export function computeEffectiveStatus(company: {
   subscriptionStatus: string;
   subscriptionOverdueSince: Date | null;
+  lifetimeAccess?: boolean;
 }): EffectiveStatus {
+  if (company.lifetimeAccess) return "active";
   if (company.subscriptionStatus === "overdue" && company.subscriptionOverdueSince) {
     const daysSince = (Date.now() - new Date(company.subscriptionOverdueSince).getTime()) / (1000 * 60 * 60 * 24);
     if (daysSince >= GRACE_PERIOD_DAYS) return "blocked";

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Users, FileText, FolderKanban, DollarSign, AlertCircle, History, BarChart3, Settings, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, FileText, FolderKanban, DollarSign, AlertCircle, History, BarChart3, Settings, LogOut, Menu, X, ShieldCheck } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Painel", icon: LayoutDashboard },
@@ -21,6 +21,7 @@ function SidebarContent({
   userName,
   companyName,
   logoData,
+  isSuperAdmin,
   pathname,
   onNavigate,
   onLogout,
@@ -28,10 +29,15 @@ function SidebarContent({
   userName: string;
   companyName: string;
   logoData?: string | null;
+  isSuperAdmin?: boolean;
   pathname: string;
   onNavigate: () => void;
   onLogout: () => void;
 }) {
+  const navItems = isSuperAdmin
+    ? [...NAV_ITEMS, { href: "/painel-sistema", label: "Painel do sistema", icon: ShieldCheck }]
+    : NAV_ITEMS;
+
   return (
     <>
       <div className="h-16 flex items-center gap-2 px-6 border-b border-white/10 shrink-0">
@@ -46,7 +52,7 @@ function SidebarContent({
         <span className="text-white font-semibold text-lg tracking-tight truncate">{companyName || "Projexa"}</span>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const Icon = item.icon;
           const active = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
@@ -84,10 +90,12 @@ export default function Sidebar({
   userName,
   companyName,
   logoData,
+  isSuperAdmin,
 }: {
   userName: string;
   companyName: string;
   logoData?: string | null;
+  isSuperAdmin?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -137,6 +145,7 @@ export default function Sidebar({
               userName={userName}
               companyName={companyName}
               logoData={logoData}
+              isSuperAdmin={isSuperAdmin}
               pathname={pathname}
               onNavigate={() => setMobileOpen(false)}
               onLogout={handleLogout}
@@ -151,6 +160,7 @@ export default function Sidebar({
           userName={userName}
           companyName={companyName}
           logoData={logoData}
+          isSuperAdmin={isSuperAdmin}
           pathname={pathname}
           onNavigate={() => {}}
           onLogout={handleLogout}

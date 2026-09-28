@@ -19,6 +19,32 @@ export const companies = pgTable("companies", {
   mpPreapprovalId: text("mp_preapproval_id"),
   mpPayerEmail: text("mp_payer_email"),
   subscriptionOverdueSince: timestamp("subscription_overdue_since"),
+  cancelledAt: timestamp("cancelled_at"),
+  lifetimeAccess: boolean("lifetime_access").notNull().default(false),
+  sellerId: text("seller_id"),
+  discountCodeId: text("discount_code_id"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const sellers = pgTable("sellers", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email"),
+  code: text("code").notNull().unique(),
+  commissionPercent: integer("commission_percent").notNull().default(10),
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const discountCodes = pgTable("discount_codes", {
+  id: text("id").primaryKey(),
+  code: text("code").notNull().unique(),
+  kind: text("kind").notNull(), // 'percent' | 'fixed' | 'free' | 'lifetime'
+  value: integer("value").notNull().default(0), // percent (0-100) or cents, ignored for free/lifetime
+  maxUses: integer("max_uses"),
+  usesCount: integer("uses_count").notNull().default(0),
+  active: boolean("active").notNull().default(true),
+  expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

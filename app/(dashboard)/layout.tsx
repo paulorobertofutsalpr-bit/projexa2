@@ -15,6 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const effectiveStatus = computeEffectiveStatus({
     subscriptionStatus: user.companySubscriptionStatus,
     subscriptionOverdueSince: user.companySubscriptionOverdueSince,
+    lifetimeAccess: user.companyLifetimeAccess,
   });
 
   if (effectiveStatus === "blocked") {
@@ -23,7 +24,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      <Sidebar userName={user.name} companyName={user.companyName} logoData={user.companyLogoData} />
+      <Sidebar
+        userName={user.name}
+        companyName={user.companyName}
+        logoData={user.companyLogoData}
+        isSuperAdmin={user.isSuperAdmin}
+      />
       <div className="flex-1 min-w-0 flex flex-col pt-14 md:pt-0">
         <header className="h-16 border-b border-slate-200 bg-white flex items-center px-4 sm:px-6 shrink-0">
           <GlobalSearch />
