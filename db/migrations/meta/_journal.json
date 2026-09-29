@@ -134,6 +134,13 @@
       "when": 1790639793583,
       "tag": "0018_plans",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1790642786700,
+      "tag": "0019_companies_is_test",
+      "breakpoints": true
     }
   ]
 }

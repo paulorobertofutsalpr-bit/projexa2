@@ -36,6 +36,7 @@ export default function AdminCompanyRow({
     subscriptionOverdueSince: string | null;
     lifetimeAccess?: boolean;
     planId?: string | null;
+    isTest?: boolean;
     userCount: number;
     createdAt: string;
   };
@@ -47,6 +48,7 @@ export default function AdminCompanyRow({
   const [price, setPrice] = useState((company.subscriptionPriceCents / 100).toFixed(2));
   const [lifetime, setLifetime] = useState(company.lifetimeAccess ?? false);
   const [planId, setPlanId] = useState(company.planId ?? "");
+  const [isTest, setIsTest] = useState(company.isTest ?? false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -74,6 +76,7 @@ export default function AdminCompanyRow({
       subscriptionPriceCents: Math.round(parseFloat(price) * 100),
       lifetimeAccess: lifetime,
       planId: planId || null,
+      isTest,
     });
     if (ok) setEditing(false);
   }
@@ -95,6 +98,9 @@ export default function AdminCompanyRow({
           {company.name}
           {company.lifetimeAccess && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700">Vitalício</span>
+          )}
+          {company.isTest && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-600">Teste</span>
           )}
         </div>
         <div className="text-xs text-slate-400">{company.email || "—"}</div>
@@ -156,6 +162,10 @@ export default function AdminCompanyRow({
             <label className="flex items-center gap-1 text-xs text-slate-500">
               <input type="checkbox" checked={lifetime} onChange={(e) => setLifetime(e.target.checked)} />
               Vitalício
+            </label>
+            <label className="flex items-center gap-1 text-xs text-slate-500">
+              <input type="checkbox" checked={isTest} onChange={(e) => setIsTest(e.target.checked)} />
+              Teste
             </label>
             {error && <span className="text-xs text-rose-600">{error}</span>}
             <button

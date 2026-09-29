@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type Seller = {
   id: string;
@@ -117,7 +118,9 @@ export default function SellersManager() {
 
       <p className="text-xs text-slate-400">
         No cadastro público (/cadastro), quem informar o código do vendedor no campo de cupom/indicação fica vinculado
-        a ele. A comissão é calculada sobre a mensalidade das empresas ativas indicadas por cada vendedor.
+        a ele. A comissão é calculada sobre a mensalidade das empresas ativas indicadas por cada vendedor. Empresas
+        marcadas como "Teste" na tela de Clientes não entram nessa conta. Clique em "Relatório mensal" para ver o
+        detalhamento mês a mês, cliente por cliente.
       </p>
 
       <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
@@ -147,9 +150,15 @@ export default function SellersManager() {
                   <td className="px-4 py-3 text-sm text-slate-600">{fmt(s.referredMrrCents)}/mês</td>
                   <td className="px-4 py-3 text-sm font-medium text-emerald-700">{fmt(s.commissionCents)}/mês</td>
                   <td className="px-4 py-3 text-right">
-                    <button onClick={() => toggleActive(s.id, !s.active)} className="text-xs text-blue-600 hover:underline">
-                      {s.active ? "Desativar" : "Ativar"}
-                    </button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Link href={`/admin/vendedores/${s.id}`} className="text-xs text-blue-600 hover:underline">
+                        Relatório mensal
+                      </Link>
+                      <span className="text-slate-300">·</span>
+                      <button onClick={() => toggleActive(s.id, !s.active)} className="text-xs text-blue-600 hover:underline">
+                        {s.active ? "Desativar" : "Ativar"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -39,22 +39,48 @@ function emptyItem(): Item {
 const inputClass =
   "w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
 
-export default function NovoOrcamentoForm({ clients }: { clients: Client[] }) {
+type InitialData = {
+  clientId: string;
+  objeto: string;
+  validadeDias: string;
+  condicaoPagamento: string;
+  formaPagamento: string;
+  prazoExecucao: string;
+  previsaoInicio: string;
+  localExecucao: string;
+  responsavelTecnico: string;
+  garantia: string;
+  escopoIncluso: string;
+  escopoNaoIncluso: string;
+  observacoesComerciais: string;
+  items: Item[];
+};
+
+export default function NovoOrcamentoForm({
+  clients,
+  budgetId,
+  initial,
+}: {
+  clients: Client[];
+  budgetId?: string;
+  initial?: InitialData;
+}) {
   const router = useRouter();
-  const [clientId, setClientId] = useState(clients[0]?.id || "");
-  const [objeto, setObjeto] = useState("");
-  const [validadeDias, setValidadeDias] = useState("15");
-  const [condicaoPagamento, setCondicaoPagamento] = useState("");
-  const [formaPagamento, setFormaPagamento] = useState("");
-  const [prazoExecucao, setPrazoExecucao] = useState("");
-  const [previsaoInicio, setPrevisaoInicio] = useState("");
-  const [localExecucao, setLocalExecucao] = useState("");
-  const [responsavelTecnico, setResponsavelTecnico] = useState("");
-  const [garantia, setGarantia] = useState("");
-  const [escopoIncluso, setEscopoIncluso] = useState("");
-  const [escopoNaoIncluso, setEscopoNaoIncluso] = useState("");
-  const [observacoesComerciais, setObservacoesComerciais] = useState("");
-  const [items, setItems] = useState<Item[]>([emptyItem()]);
+  const isEditing = !!budgetId;
+  const [clientId, setClientId] = useState(initial?.clientId || clients[0]?.id || "");
+  const [objeto, setObjeto] = useState(initial?.objeto || "");
+  const [validadeDias, setValidadeDias] = useState(initial?.validadeDias || "15");
+  const [condicaoPagamento, setCondicaoPagamento] = useState(initial?.condicaoPagamento || "");
+  const [formaPagamento, setFormaPagamento] = useState(initial?.formaPagamento || "");
+  const [prazoExecucao, setPrazoExecucao] = useState(initial?.prazoExecucao || "");
+  const [previsaoInicio, setPrevisaoInicio] = useState(initial?.previsaoInicio || "");
+  const [localExecucao, setLocalExecucao] = useState(initial?.localExecucao || "");
+  const [responsavelTecnico, setResponsavelTecnico] = useState(initial?.responsavelTecnico || "");
+  const [garantia, setGarantia] = useState(initial?.garantia || "");
+  const [escopoIncluso, setEscopoIncluso] = useState(initial?.escopoIncluso || "");
+  const [escopoNaoIncluso, setEscopoNaoIncluso] = useState(initial?.escopoNaoIncluso || "");
+  const [observacoesComerciais, setObservacoesComerciais] = useState(initial?.observacoesComerciais || "");
+  const [items, setItems] = useState<Item[]>(initial?.items?.length ? initial.items : [emptyItem()]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -85,8 +111,8 @@ export default function NovoOrcamentoForm({ clients }: { clients: Client[] }) {
       return;
     }
     setLoading(true);
-    const res = await fetch("/api/budgets", {
-      method: "POST",
+    const res = await fetch(isEditing ? `/api/budgets/${budgetId}` : "/api/budgets", {
+      method: isEditing ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         clientId,
@@ -126,10 +152,12 @@ export default function NovoOrcamentoForm({ clients }: { clients: Client[] }) {
   return (
     <div className="max-w-3xl space-y-5">
       <div>
-        <Link href="/orcamentos" className="text-sm text-blue-600 hover:underline">
-          ← Voltar para orçamentos
+        <Link href={isEditing ? `/orcamentos/${budgetId}` : "/orcamentos"} className="text-sm text-blue-600 hover:underline">
+          ← Voltar para {isEditing ? "o orçamento" : "orçamentos"}
         </Link>
-        <h1 className="text-2xl font-semibold text-slate-900 mt-2">Novo orçamento</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 mt-2">
+          {isEditing ? "Editar orçamento" : "Novo orçamento"}
+        </h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -398,7 +426,10 @@ export default function NovoOrcamentoForm({ clients }: { clients: Client[] }) {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Link href="/orcamentos" className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md">
+              <Link
+                href={isEditing ? `/orcamentos/${budgetId}` : "/orcamentos"}
+                className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md"
+              >
                 Cancelar
               </Link>
               <button
@@ -406,7 +437,7 @@ export default function NovoOrcamentoForm({ clients }: { clients: Client[] }) {
                 disabled={loading}
                 className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
               >
-                {loading ? "Salvando..." : "Salvar orçamento"}
+                {loading ? "Salvando..." : isEditing ? "Salvar alterações" : "Salvar orçamento"}
               </button>
             </div>
           </>

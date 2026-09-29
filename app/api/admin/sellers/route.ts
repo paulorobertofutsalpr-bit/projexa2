@@ -19,8 +19,8 @@ export async function GET() {
       commissionPercent: sellers.commissionPercent,
       active: sellers.active,
       createdAt: sellers.createdAt,
-      referredCount: sql<number>`(select count(*)::int from "companies" where "companies"."seller_id" = "sellers"."id")`,
-      referredMrrCents: sql<number>`(select coalesce(sum("companies"."subscription_price_cents"), 0)::int from "companies" where "companies"."seller_id" = "sellers"."id" and "companies"."subscription_status" = 'active' and "companies"."lifetime_access" = false)`,
+      referredCount: sql<number>`(select count(*)::int from "companies" where "companies"."seller_id" = "sellers"."id" and "companies"."is_test" = false)`,
+      referredMrrCents: sql<number>`(select coalesce(sum("companies"."subscription_price_cents"), 0)::int from "companies" where "companies"."seller_id" = "sellers"."id" and "companies"."is_test" = false and "companies"."subscription_status" = 'active' and "companies"."lifetime_access" = false)`,
     })
     .from(sellers)
     .orderBy(desc(sellers.createdAt));

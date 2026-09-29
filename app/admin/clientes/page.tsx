@@ -18,6 +18,7 @@ export default async function AdminClientesPage() {
       subscriptionOverdueSince: companies.subscriptionOverdueSince,
       lifetimeAccess: companies.lifetimeAccess,
       planId: companies.planId,
+      isTest: companies.isTest,
       createdAt: companies.createdAt,
       userCount: sql<number>`(select count(*)::int from "users" where "users"."company_id" = "companies"."id")`,
     })

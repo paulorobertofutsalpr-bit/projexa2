@@ -47,6 +47,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     update.planId = body.planId || null;
   }
 
+  if (typeof body?.isTest === "boolean") {
+    update.isTest = body.isTest;
+  }
+
   if (Object.keys(update).length === 0) {
     return NextResponse.json({ error: "Nada para atualizar." }, { status: 400 });
   }

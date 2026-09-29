@@ -24,6 +24,7 @@ export const companies = pgTable("companies", {
   sellerId: text("seller_id"),
   discountCodeId: text("discount_code_id"),
   planId: text("plan_id"),
+  isTest: boolean("is_test").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
