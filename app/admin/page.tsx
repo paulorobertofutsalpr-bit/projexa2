@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { companies, users } from "@/db/schema";
 import { sql } from "drizzle-orm";
+import AdminPageHeader from "@/components/AdminPageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +69,10 @@ export default async function PainelSistemaDashboard() {
 
   return (
     <div className="space-y-6">
+      <AdminPageHeader
+        title="Dashboard"
+        description="Visão geral de todas as empresas assinantes do Projexa."
+      />
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <StatCard label="Total de usuários" value={totalUsuarios} />
         <StatCard label="Total de empresas" value={rows.length} />

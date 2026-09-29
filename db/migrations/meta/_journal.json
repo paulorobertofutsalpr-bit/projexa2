@@ -120,6 +120,20 @@
       "when": 1790638209170,
       "tag": "0016_sellers_and_discount_codes",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1790638951488,
+      "tag": "0017_messages",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1790639793583,
+      "tag": "0018_plans",
+      "breakpoints": true
     }
   ]
 }

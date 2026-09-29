@@ -10,6 +10,7 @@ import ProjectDocuments from "@/components/ProjectDocuments";
 import ProjectActions from "@/components/ProjectActions";
 import ProjectHistory from "@/components/ProjectHistory";
 import ProjectPortalLink from "@/components/ProjectPortalLink";
+import ProjectDeadlineEditor from "@/components/ProjectDeadlineEditor";
 
 export const dynamic = "force-dynamic";
 
@@ -72,16 +73,12 @@ export default async function ProjetoDetailPage({ params }: { params: Promise<{ 
           </div>
           <div className="text-xs text-slate-500 mt-1">{project.progresso}%</div>
         </div>
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <div className="text-xs text-slate-400">Prazo</div>
-            <div className="text-slate-800">{project.prazo || "—"}</div>
-          </div>
-          <div>
-            <div className="text-xs text-slate-400">Prioridade</div>
-            <div className="text-slate-800">{project.prioridade}</div>
-          </div>
-        </div>
+        <ProjectDeadlineEditor
+          projectId={project.id}
+          prazo={project.prazo}
+          prioridade={project.prioridade}
+          done={project.status === "Concluído"}
+        />
         {project.descricao && (
           <div>
             <div className="text-xs text-slate-400 mb-1">Descrição</div>

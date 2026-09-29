@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Users, FileText, FolderKanban, DollarSign, AlertCircle, History, BarChart3, Settings, LogOut, Menu, X, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Users, FileText, FolderKanban, DollarSign, AlertCircle, History, BarChart3, Settings, LogOut, Menu, X, ShieldCheck, MessageSquare } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Painel", icon: LayoutDashboard },
@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: "/financeiro", label: "Financeiro", icon: DollarSign },
   { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
   { href: "/atividades", label: "Atividades", icon: History },
+  { href: "/mensagens", label: "Mensagens", icon: MessageSquare },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
@@ -34,9 +35,7 @@ function SidebarContent({
   onNavigate: () => void;
   onLogout: () => void;
 }) {
-  const navItems = isSuperAdmin
-    ? [...NAV_ITEMS, { href: "/painel-sistema", label: "Painel do sistema", icon: ShieldCheck }]
-    : NAV_ITEMS;
+  const navItems = NAV_ITEMS;
 
   return (
     <>
@@ -70,7 +69,19 @@ function SidebarContent({
           );
         })}
       </nav>
-      <div className="px-4 py-4 border-t border-white/10 shrink-0">
+      {isSuperAdmin && (
+        <div className="px-4 pt-3 shrink-0">
+          <Link
+            href="/admin"
+            onClick={onNavigate}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-xs bg-white/5 text-blue-200 hover:bg-white/10 hover:text-white border border-white/10"
+          >
+            <ShieldCheck size={15} />
+            Área de gestão (admin)
+          </Link>
+        </div>
+      )}
+      <div className="px-4 py-4 border-t border-white/10 shrink-0 mt-3">
         <div className="text-xs text-slate-400 px-2 mb-2">
           <div className="text-slate-200 font-medium">{userName}</div>
         </div>

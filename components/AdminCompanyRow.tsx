@@ -21,8 +21,11 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled: "bg-slate-200 text-slate-500",
 };
 
+type Plan = { id: string; name: string };
+
 export default function AdminCompanyRow({
   company,
+  plans,
 }: {
   company: {
     id: string;
@@ -32,40 +35,58 @@ export default function AdminCompanyRow({
     subscriptionPriceCents: number;
     subscriptionOverdueSince: string | null;
     lifetimeAccess?: boolean;
+    planId?: string | null;
     userCount: number;
     createdAt: string;
   };
+  plans: Plan[];
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [status, setStatus] = useState(company.subscriptionStatus);
   const [price, setPrice] = useState((company.subscriptionPriceCents / 100).toFixed(2));
   const [lifetime, setLifetime] = useState(company.lifetimeAccess ?? false);
+  const [planId, setPlanId] = useState(company.planId ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function save() {
+  async function updateCompany(update: Record<string, unknown>) {
     setSaving(true);
     setError(null);
     const res = await fetch(`/api/admin/companies/${company.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        subscriptionStatus: status,
-        subscriptionPriceCents: Math.round(parseFloat(price) * 100),
-        lifetimeAccess: lifetime,
-      }),
+      body: JSON.stringify(update),
     });
     const data = await res.json();
+    setSaving(false);
     if (!res.ok) {
       setError(data.error || "Erro ao salvar.");
-      setSaving(false);
-      return;
+      return false;
     }
-    setSaving(false);
-    setEditing(false);
     router.refresh();
+    return true;
   }
+
+  async function save() {
+    const ok = await updateCompany({
+      subscriptionStatus: status,
+      subscriptionPriceCents: Math.round(parseFloat(price) * 100),
+      lifetimeAccess: lifetime,
+      planId: planId || null,
+    });
+    if (ok) setEditing(false);
+  }
+
+  async function quickToggleAccess() {
+    if (company.subscriptionStatus === "blocked") {
+      await updateCompany({ subscriptionStatus: "active" });
+    } else {
+      await updateCompany({ subscriptionStatus: "blocked" });
+    }
+  }
+
+  const planName = plans.find((p) => p.id === company.planId)?.name;
 
   return (
     <tr className="border-b border-slate-100 last:border-0">
@@ -79,6 +100,24 @@ export default function AdminCompanyRow({
         <div className="text-xs text-slate-400">{company.email || "—"}</div>
       </td>
       <td className="px-4 py-3 text-sm text-slate-600">{company.userCount}</td>
+      <td className="px-4 py-3">
+        {editing ? (
+          <select
+            value={planId}
+            onChange={(e) => setPlanId(e.target.value)}
+            className="text-xs border border-slate-200 rounded-md px-2 py-1"
+          >
+            <option value="">Sem plano</option>
+            {plans.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span className="text-sm text-slate-600">{planName || "—"}</span>
+        )}
+      </td>
       <td className="px-4 py-3">
         {editing ? (
           <select
@@ -131,9 +170,22 @@ export default function AdminCompanyRow({
             </button>
           </div>
         ) : (
-          <button onClick={() => setEditing(true)} className="text-xs text-blue-600 hover:underline">
-            Editar
-          </button>
+          <div className="flex items-center justify-end gap-2">
+            <button
+              onClick={quickToggleAccess}
+              disabled={saving}
+              className={`text-xs px-2 py-1 rounded-md font-medium disabled:opacity-50 ${
+                company.subscriptionStatus === "blocked"
+                  ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                  : "bg-rose-600 text-white hover:bg-rose-700"
+              }`}
+            >
+              {company.subscriptionStatus === "blocked" ? "Conceder acesso" : "Bloquear"}
+            </button>
+            <button onClick={() => setEditing(true)} className="text-xs text-blue-600 hover:underline">
+              Editar
+            </button>
+          </div>
         )}
       </td>
     </tr>

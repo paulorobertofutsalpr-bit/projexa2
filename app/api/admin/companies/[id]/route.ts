@@ -43,6 +43,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     update.lifetimeAccess = body.lifetimeAccess;
   }
 
+  if (body?.planId !== undefined) {
+    update.planId = body.planId || null;
+  }
+
   if (Object.keys(update).length === 0) {
     return NextResponse.json({ error: "Nada para atualizar." }, { status: 400 });
   }

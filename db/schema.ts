@@ -23,6 +23,19 @@ export const companies = pgTable("companies", {
   lifetimeAccess: boolean("lifetime_access").notNull().default(false),
   sellerId: text("seller_id"),
   discountCodeId: text("discount_code_id"),
+  planId: text("plan_id"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const plans = pgTable("plans", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  priceCentsMonthly: integer("price_cents_monthly").notNull().default(0),
+  priceCentsAnnual: integer("price_cents_annual").notNull().default(0),
+  features: text("features").notNull().default(""), // uma por linha
+  active: boolean("active").notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -277,6 +290,19 @@ export const projectNotes = pgTable("project_notes", {
   userName: text("user_name").notNull(),
   texto: text("texto").notNull(),
   editedAt: timestamp("edited_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const messages = pgTable("messages", {
+  id: text("id").primaryKey(),
+  companyId: text("company_id")
+    .notNull()
+    .references(() => companies.id),
+  senderId: text("sender_id").notNull(),
+  senderName: text("sender_name").notNull(),
+  fromSuperAdmin: boolean("from_super_admin").notNull().default(false),
+  body: text("body").notNull(),
+  readAt: timestamp("read_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
