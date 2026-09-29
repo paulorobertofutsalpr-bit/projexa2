@@ -31,6 +31,8 @@ type Summary = {
 type ReportData = {
   seller: { id: string; name: string; code: string; commissionPercent: number };
   month: string;
+  periodStart: string;
+  periodEnd: string;
   companies: CompanyRow[];
   summary: Summary;
 };
@@ -64,20 +66,32 @@ function monthLabel(month: string) {
   return d.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
 }
 
+function fmtPeriodDate(iso: string) {
+  return new Date(iso).toLocaleDateString("pt-BR");
+}
+
 function shiftMonth(month: string, delta: number) {
   const [y, m] = month.split("-").map(Number);
   const d = new Date(y, m - 1 + delta, 1);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
-export default function SellerReport({ sellerId }: { sellerId: string }) {
+export default function SellerReport({
+  apiBase,
+  printBase,
+  showCsvExport = true,
+}: {
+  apiBase: string;
+  printBase?: string;
+  showCsvExport?: boolean;
+}) {
   const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7));
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
   async function load(m: string) {
     setLoading(true);
-    const res = await fetch(`/api/admin/sellers/${sellerId}/report?month=${m}`);
+    const res = await fetch(`${apiBase}/report?month=${m}`);
     const json = await res.json();
     setData(json);
     setLoading(false);
@@ -126,7 +140,7 @@ export default function SellerReport({ sellerId }: { sellerId: string }) {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between bg-white border border-slate-200 rounded-lg p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 rounded-lg p-4">
         <div>
           <div className="text-sm font-medium text-slate-900">
             {seller.name} <span className="text-slate-400 font-mono text-xs">({seller.code})</span>
@@ -141,13 +155,33 @@ export default function SellerReport({ sellerId }: { sellerId: string }) {
           <button onClick={() => setMonth((m) => shiftMonth(m, 1))} className="p-1.5 rounded-md hover:bg-slate-100">
             <ChevronRight size={16} />
           </button>
-          <button
-            onClick={exportCsv}
-            className="ml-2 flex items-center gap-1 text-xs px-2.5 py-1.5 border border-slate-200 rounded-md hover:bg-slate-50"
-          >
-            <Download size={13} /> Exportar CSV
-          </button>
+          {showCsvExport && (
+            <button
+              onClick={exportCsv}
+              className="ml-2 flex items-center gap-1 text-xs px-2.5 py-1.5 border border-slate-200 rounded-md hover:bg-slate-50"
+            >
+              <Download size={13} /> Exportar CSV
+            </button>
+          )}
+          {printBase && (
+            <a
+              href={`${printBase}?month=${month}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+            >
+              <Download size={13} /> Baixar PDF
+            </a>
+          )}
         </div>
+      </div>
+
+      <div className="bg-blue-50 border border-blue-100 rounded-lg px-4 py-2.5 text-sm text-blue-800">
+        Período de apuração:{" "}
+        <span className="font-medium">
+          {fmtPeriodDate(data.periodStart)} a {fmtPeriodDate(data.periodEnd)}
+        </span>{" "}
+        — este relatório é reiniciado a cada mês, sempre do dia 1º ao último dia (28, 29, 30 ou 31, conforme o mês).
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">

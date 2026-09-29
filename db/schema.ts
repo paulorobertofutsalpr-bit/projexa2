@@ -47,6 +47,7 @@ export const sellers = pgTable("sellers", {
   code: text("code").notNull().unique(),
   commissionPercent: integer("commission_percent").notNull().default(10),
   active: boolean("active").notNull().default(true),
+  portalToken: text("portal_token").unique(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

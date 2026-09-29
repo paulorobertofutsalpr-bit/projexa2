@@ -13,6 +13,7 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/proposta/") ||
     pathname.startsWith("/contrato/") ||
     pathname.startsWith("/portal/") ||
+    pathname.startsWith("/vendedor/") ||
     pathname.startsWith("/api/public/") ||
     pathname.startsWith("/api/webhooks/");
   const hasCookie = request.cookies.has(SESSION_COOKIE);
